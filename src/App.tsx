@@ -1,40 +1,54 @@
-import { useEffect, useState } from "react";
-import type { Schema } from "../amplify/data/resource";
-import { generateClient } from "aws-amplify/data";
+import React from "react";
+import { CssBaseline, ThemeProvider } from "@mui/material";
+import { AppShell, AppPage } from "./Shell";
+import { appTheme } from "./theme";
+import {
+  AnalyticsPage,
+  DashboardPage,
+  EmployeesPage,
+  MediaLibraryPage,
+  PlaylistsPage,
+  SchedulingPage,
+  ScreensPage,
+  SettingsPage,
+} from "./Pages";
+import SignageLoginBackground from "./loginScreen";
 
-const client = generateClient<Schema>();
+export const App = () => {
+  const [currentPage, setCurrentPage] = React.useState<AppPage>("Dashboard");
 
-function App() {
-  const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
-
-  useEffect(() => {
-    client.models.Todo.observeQuery().subscribe({
-      next: (data) => setTodos([...data.items]),
-    });
-  }, []);
-
-  function createTodo() {
-    client.models.Todo.create({ content: window.prompt("Todo content") });
-  }
+  const renderCurrentPage = () => {
+    switch (currentPage) {
+      case "Dashboard":
+        return <DashboardPage />;
+      case "Screens":
+        return <ScreensPage />;
+      case "Playlists":
+        return <PlaylistsPage />;
+      case "Scheduling":
+        return <SchedulingPage />;
+      case "Media Library":
+        return <MediaLibraryPage />;
+      case "Analytics":
+        return <AnalyticsPage />;
+      case "Employees":
+        return <EmployeesPage />;
+      case "Settings":
+        return <SettingsPage />;
+      default:
+        return <DashboardPage />;
+    }
+  };
 
   return (
-    <main>
-      <h1>My todos</h1>
-      <button onClick={createTodo}>+ new</button>
-      <ul>
-        {todos.map((todo) => (
-          <li key={todo.id}>{todo.content}</li>
-        ))}
-      </ul>
-      <div>
-        🥳 App successfully hosted. Try creating a new todo.
-        <br />
-        <a href="https://docs.amplify.aws/react/start/quickstart/#make-frontend-updates">
-          Review next step of this tutorial.
-        </a>
-      </div>
-    </main>
+    <ThemeProvider theme={appTheme}>
+      <CssBaseline />
+      {/* <AppShell page={currentPage} onNavigate={setCurrentPage}>
+        {renderCurrentPage()}
+      </AppShell> */}
+      <SignageLoginBackground />
+    </ThemeProvider>
   );
-}
+};
 
 export default App;
